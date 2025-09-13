@@ -1,0 +1,75 @@
+<div class="row g-3">
+  <!-- Internet Exposure -->
+  <div class="col-md-6">
+    <div class="card {% if scan.ports.open_ports|length > 2 %}warn{% else %}good{% endif %}">
+      <div class="card-body">
+        <h6>Internet Exposure Inventory</h6>
+        <p><strong>Porturi deschise:</strong> {{ scan.ports.open_ports|default:"-" }}</p>
+        {% if 21 in scan.ports.open_ports %}
+          <p class="text-danger mb-0">FTP (21) expus – recomandat SFTP.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- TLS & Certificat -->
+  <div class="col-md-6">
+    <div class="card {% if 'tls1.0' in scan.tls.min_tls_version|lower or 'tls1.1' in scan.tls.min_tls_version|lower %}bad{% else %}good{% endif %}">
+      <div class="card-body">
+        <h6>TLS & Certificat</h6>
+        <p>Certificat valid: {{ scan.tls.cert_valid|yesno:"Da,Nu" }}
+          {% if scan.tls.days_left %} ({{ scan.tls.days_left }} zile rămase){% endif %}
+        </p>
+        <p>Versiuni acceptate: {{ scan.tls.min_tls_version|default:"necunoscut" }}</p>
+        <p>HSTS: {{ scan.headers.hsts|yesno:"Da,Nu" }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Web Security Headers -->
+  <div class="col-md-6">
+    <div class="card {% if not scan.headers.csp or not scan.headers.hsts %}bad{% else %}good{% endif %}">
+      <div class="card-body">
+        <h6>Web Security Headers</h6>
+        <p>HTTPS OK: {{ scan.headers.https_ok|yesno:"Da,Nu" }}</p>
+        <p>HSTS: {{ scan.headers.hsts|yesno:"Da,Nu" }}</p>
+        <p>CSP: {{ scan.headers.csp|yesno:"Da,Nu" }}</p>
+        <p>X-Frame-Options: {{ scan.headers.xfo|yesno:"Da,Nu" }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Authentication -->
+  <div class="col-md-6">
+    <div class="card {% if not scan.email_auth.dmarc or scan.email_auth.dkim == 'missing' %}bad{% else %}good{% endif %}">
+      <div class="card-body">
+        <h6>Email Authentication</h6>
+        <p>SPF: {{ scan.email_auth.spf|yesno:"Da,Nu" }}</p>
+        <p>DKIM: {{ scan.email_auth.dkim }}</p>
+        <p>DMARC: {{ scan.email_auth.dmarc|yesno:"Da,Nu" }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CVE Footprint -->
+  <div class="col-12">
+    <div class="card {% if scan.cves.items|length > 0 %}warn{% else %}good{% endif %}">
+      <div class="card-body">
+        <h6>CVE Footprint</h6>
+        <p>Produs detectat: {{ scan.cves.product|default:"n/d" }}</p>
+        {% if scan.cves.items %}
+          <ul class="mb-0">
+          {% for i in scan.cves.items %}
+            <li>
+              <a href="{{ i.url }}" target="_blank" rel="noopener">{{ i.cve_id }}</a>
+              – {{ i.severity|default:"n/a" }}
+            </li>
+          {% endfor %}
+          </ul>
+        {% else %}
+          <p>Nicio vulnerabilitate detectată pe baza semnăturilor găsite.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

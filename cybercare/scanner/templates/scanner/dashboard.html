@@ -1,0 +1,46 @@
+{% extends "scanner/base.html" %}
+{% block content %}
+{% load widget_tweaks %}
+{% load form_tags %}
+<div class="row">
+  <div class="col-lg-5">
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">Scanare externă automată</h5>
+        <form method="post" action="{% url 'start_scan' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.target.label_tag }}
+            {{ form.target|add_class:"form-control" }}
+          </div>
+          <button class="btn btn-primary" type="submit">Scanează</button>
+        </form>
+        <p class="text-muted mt-3"><small>Disclaimer: verifică doar partea vizibilă pe internet, nu procesele interne.</small></p>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <h5>Ultimele scanări</h5>
+    <ul class="list-group">
+      {% for s in scans %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ s.target.input_value }}</strong>
+          <div class="small text-muted">{{ s.started_at }}</div>
+        </div>
+        <div>
+          {% if s.status == "done" %}
+            <span class="badge bg-{% if s.severity == 'green' %}success{% elif s.severity == 'yellow' %}warning text-dark{% else %}danger{% endif %}">{{ s.score }}%</span>
+          {% else %}
+            <span class="badge bg-secondary">{{ s.status }}</span>
+          {% endif %}
+          <a class="btn btn-sm btn-outline-primary ms-2" href="{% url 'scan_detail' s.id %}">Deschide</a>
+        </div>
+      </li>
+      {% empty %}
+      <li class="list-group-item">Nicio scanare încă.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

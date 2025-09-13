@@ -1,0 +1,75 @@
+{% extends "scanner/base.html" %}
+{% block content %}
+<div class="container my-5">
+  <div class="row align-items-center">
+    
+    <!-- Левая колонка с описанием -->
+    <div class="col-lg-6 mb-4 mb-lg-0">
+      <h1 class="fw-bold mb-4">CyberCare – Website Vulnerability Scanner</h1>
+      <p class="lead">
+        CyberCare este o platformă digitală care te ajută să respecți cerințele noii
+        Legi privind securitatea cibernetică, valabilă din 2026.
+      </p>
+      <p>
+        Legea obligă toate companiile să aplice măsuri minime de protecție și să raporteze incidentele
+        cibernetice într-un format standardizat.
+      </p>
+      <p>
+        Platforma transformă aceste obligații complicate în pași simpli:
+        verifici rapid dacă site-ul tău are probleme, completezi o listă de conformitate ușor de înțeles
+        și primești un raport clar, pregătit pentru audit.
+      </p>
+      <p>
+        În plus, dacă apare un incident, CyberCare te ghidează pas cu pas pentru a-l raporta corect, conform legii.
+      </p>
+    </div>
+
+    <!-- Правая колонка со сканером -->
+    <div class="col-lg-6">
+      <div class="card shadow-lg border-0">
+        <div class="card-body p-4">
+          <ul class="nav nav-tabs mb-3" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-bs-toggle="tab" href="#light" role="tab">Light scan</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#deep" role="tab">Deep scan</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="tab" href="#cli" role="tab">CLI scan</a>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- Light scan -->
+            <div class="tab-pane fade show active" id="light" role="tabpanel">
+              <form method="post" action="{% url 'start_scan' %}">
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                  <span class="input-group-text">HTTPS</span>
+                  <input type="text" name="target" placeholder="www.example.com" class="form-control" required>
+                </div>
+                <button class="btn btn-primary w-100" type="submit">Start scan</button>
+              </form>
+              <p class="text-muted mt-3 small">
+                O scanare rapidă detectează porturi expuse, configurări TLS nesigure și probleme de bază.
+              </p>
+            </div>
+
+            <!-- Deep scan -->
+            <div class="tab-pane fade" id="deep" role="tabpanel">
+              <p class="text-muted">Funcționalitate disponibilă în versiunea Pro (v0.2+).</p>
+            </div>
+
+            <!-- CLI scan -->
+            <div class="tab-pane fade" id="cli" role="tabpanel">
+              <p class="text-muted">Poți rula scanner-ul direct din terminal (curând).</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

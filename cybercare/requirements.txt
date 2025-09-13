@@ -1,0 +1,9 @@
+Django==5.0.7
+python-dotenv==1.0.1
+requests==2.32.3
+dnspython==2.6.1
+python-nmap==0.7.1
+cryptography==43.0.3
+celery==5.4.0
+redis==5.0.7
+packaging==24.1

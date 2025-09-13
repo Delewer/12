@@ -1,0 +1,24 @@
+{% extends "scanner/base.html" %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4>Raport – {{ scan.target.input_value }}</h4>
+  <span class="badge bg-{% if scan.severity == 'green' %}success{% elif scan.severity == 'yellow' %}warning text-dark{% else %}danger{% endif %}">
+    {% if scan.score %}{{ scan.score }}%{% else %}{{ scan.status }}{% endif %}
+  </span>
+</div>
+
+<p><strong>Data scanării:</strong> {{ scan.started_at|date:"d.m.Y H:i" }}</p>
+<p class="text-muted"><small>Scop: verificare conformitate cu Legea nr. 48/2023 și HG nr. 49/2025 (Art. 11 – măsuri minime de securitate).</small></p>
+
+{% if scan.status != "done" %}
+  <div class="alert alert-info">Scanarea este în curs sau a eșuat: <em>{{ scan.status }}</em>.<br>Reîncarcă pagina în câteva momente.</div>
+{% else %}
+  {% include "scanner/partials/_result_cards.html" %}
+  <div class="card mt-3">
+    <div class="card-body">
+      <h6>Disclaimer</h6>
+      <p>Acest raport are scop informativ și educativ. Nu înlocuiește un audit extern autorizat conform HG nr. 49/2025. Pentru conformitate deplină, este necesar un audit realizat de specialiști acreditați.</p>
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

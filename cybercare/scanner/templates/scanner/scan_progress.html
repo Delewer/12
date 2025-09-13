@@ -1,0 +1,109 @@
+{% extends "scanner/base.html" %}
+{% block content %}
+<div class="container py-5 text-center">
+
+  <h3>🔍 Se scanează domeniul: 
+    <span class="text-primary">{{ scan.target.input_value }}</span>
+  </h3>
+  <p class="text-muted">Procesul poate dura câteva minute...</p>
+
+  <!-- Прогрессбар -->
+  <div class="progress my-4" style="height: 30px;">
+    <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+         role="progressbar" style="width: 20%">Început...</div>
+  </div>
+
+  <!-- Список шагов -->
+  <ul class="list-group text-start mx-auto" style="max-width: 500px;">
+    <li class="list-group-item d-flex justify-content-between align-items-center" id="step-porturi">
+      🔘 Porturi & Servicii
+      <span class="badge bg-secondary">Așteptare</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center" id="step-tls">
+      🔘 TLS & Certificat
+      <span class="badge bg-secondary">Așteptare</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center" id="step-headers">
+      🔘 Web Security Headers
+      <span class="badge bg-secondary">Așteptare</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center" id="step-email">
+      🔘 Autentificare Email
+      <span class="badge bg-secondary">Așteptare</span>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center" id="step-cve">
+      🔘 CVE Footprint
+      <span class="badge bg-secondary">Așteptare</span>
+    </li>
+  </ul>
+
+  <div id="status-text" class="fw-bold text-secondary mt-4">Status: {{ scan.status }}</div>
+</div>
+
+<script>
+function updateStep(stepId, state) {
+  let li = document.getElementById(stepId);
+  let badge = li.querySelector("span");
+
+  if (state === "running") {
+    badge.className = "badge bg-info text-dark";
+    badge.innerText = "În curs...";
+  } else if (state === "done") {
+    badge.className = "badge bg-success";
+    badge.innerText = "Finalizat";
+    li.firstChild.textContent = "✅ " + li.firstChild.textContent.slice(2);
+  }
+}
+
+function checkStatus() {
+  fetch("{% url 'scan_status' scan.id %}")
+    .then(r => r.json())
+    .then(data => {
+      let bar = document.getElementById("progress-bar");
+      let statusText = document.getElementById("status-text");
+
+      // Progress bar
+      if (data.status === "queued") {
+        bar.style.width = "20%";
+        bar.innerText = "În așteptare...";
+      } else if (data.status === "running") {
+        bar.style.width = "60%";
+        bar.innerText = "Se scanează...";
+      } else if (data.status === "done") {
+        bar.style.width = "100%";
+        bar.classList.remove("bg-info");
+        bar.classList.add("bg-success");
+        bar.innerText = "Finalizat!";
+        statusText.innerText = "Scanare finalizată ✅";
+        setTimeout(() => {
+          window.location.href = "{% url 'scan_detail' scan.id %}";
+        }, 2000);
+      } else if (data.status === "error") {
+        bar.style.width = "100%";
+        bar.classList.remove("bg-info");
+        bar.classList.add("bg-danger");
+        bar.innerText = "Eroare!";
+        statusText.innerText = "A apărut o problemă ❌";
+      }
+
+      // Steps
+      if (data.step) {
+        if (data.step === "Porturi") updateStep("step-porturi", "done");
+        if (data.step === "TLS") updateStep("step-tls", "done");
+        if (data.step === "Headers") updateStep("step-headers", "done");
+        if (data.step === "Email") updateStep("step-email", "done");
+        if (data.step === "CVE") updateStep("step-cve", "done");
+
+        // текущий шаг подсвечиваем как running
+        if (data.step === "Porturi") updateStep("step-porturi", "running");
+        if (data.step === "TLS") updateStep("step-tls", "running");
+        if (data.step === "Headers") updateStep("step-headers", "running");
+        if (data.step === "Email") updateStep("step-email", "running");
+        if (data.step === "CVE") updateStep("step-cve", "running");
+      }
+    });
+}
+
+setInterval(checkStatus, 2000);
+</script>
+{% endblock %}

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="utf-8">
+  <title>CyberCare – Mini Audit Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Иконки Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #f8f9fa;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+    .card {
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+    .card.good { border-left: 6px solid #2e7d32; }   /* Зеленый */
+    .card.warn { border-left: 6px solid #ed6c02; }   /* Оранжевый */
+    .card.bad  { border-left: 6px solid #c62828; }   /* Красный */
+
+    footer {
+      margin-top: 4rem;
+      padding: 2rem 0;
+      background: #212529;
+      color: #adb5bd;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    footer a { color: #fff; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <!-- Навбар -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'landing' %}">
+        <i class="bi bi-shield-lock"></i> CyberCare
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'landing' %}active{% endif %}" href="{% url 'landing' %}">Acasă</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Documentație</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Контент -->
+  <main class="container py-5">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Футер -->
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 CyberCare – Mini Audit Dashboard. Toate drepturile rezervate.</p>
+      <p>
+        <a href="#">Termeni & Condiții</a> ·
+        <a href="#">Politica de confidențialitate</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
