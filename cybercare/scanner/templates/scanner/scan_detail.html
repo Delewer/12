@@ -36,17 +36,47 @@
   {% if scan.subdomain_scans %}
   <div class="card mt-3">
     <div class="card-body">
-      <h6>Rezultate pentru subdomenii</h6>
-      <ul>
-        {% for sub in scan.subdomain_scans %}
-          <li>
-            <strong>{{ sub.target }}</strong> –
-            <span class="badge bg-{% if sub.severity == 'green' %}success{% elif sub.severity == 'yellow' %}warning text-dark{% else %}danger{% endif %}">
-              {{ sub.score }}%
-            </span>
-          </li>
-        {% endfor %}
-      </ul>
+      <h6>Rezultate detaliate pentru subdomenii</h6>
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th>Subdomeniu</th>
+            <th>Porte deschise</th>
+            <th>TLS</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for sub in scan.subdomain_scans %}
+          <tr>
+            <td><strong>{{ sub.target }}</strong></td>
+            <td>
+              {% if sub.ports.open_ports %}
+                {{ sub.ports.open_ports|join:", " }}
+              {% else %}
+                —
+              {% endif %}
+            </td>
+            <td>
+              {% if sub.tls.valid %}
+                {{ sub.tls.version }}
+              {% else %}
+                N/A
+              {% endif %}
+            </td>
+            <td>
+              {% if sub.score %}
+                <span class="badge bg-{% if sub.severity == 'green' %}success{% elif sub.severity == 'yellow' %}warning text-dark{% else %}danger{% endif %}">
+                  {{ sub.score }}%
+                </span>
+              {% else %}
+                —
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
   {% endif %}
@@ -59,6 +89,16 @@
         Pentru conformitate deplină, este necesar un audit realizat de specialiști acreditați.
       </p>
     </div>
+  </div>
+
+  
+  <div class="mt-3 text-center">
+    <a href="{% url 'export_pdf' scan.id %}" class="btn btn-danger me-2">
+      ⬇️ Download PDF
+    </a>
+    <a href="{% url 'export_json' scan.id %}" class="btn btn-secondary">
+      ⬇️ Download JSON
+    </a>
   </div>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,12 @@
+{% extends "scanner/base.html" %}
+
+{% block content %}
+  <div class="mt-3">
+    <a href="{% url 'export_pdf' scan.id %}" class="btn btn-danger">
+      ⬇️ Download PDF
+    </a>
+    <a href="{% url 'export_json' scan.id %}" class="btn btn-secondary">
+      ⬇️ Download JSON
+    </a>
+  </div>
+{% endblock %}
