@@ -30,5 +30,8 @@ class Scan(models.Model):
     cves = models.JSONField(default=dict)              # {product:"Apache 2.4.41", items:[{cve_id, severity, url}]}
     summary = models.TextField(blank=True, default="") # Text raport
 
+    subdomains = models.JSONField(default=list)
+    subdomain_scans = models.JSONField(default=list)
+
     def __str__(self):
         return f"Scan {self.id} for {self.target}"

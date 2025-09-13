@@ -11,13 +11,53 @@
 <p class="text-muted"><small>Scop: verificare conformitate cu Legea nr. 48/2023 și HG nr. 49/2025 (Art. 11 – măsuri minime de securitate).</small></p>
 
 {% if scan.status != "done" %}
-  <div class="alert alert-info">Scanarea este în curs sau a eșuat: <em>{{ scan.status }}</em>.<br>Reîncarcă pagina în câteva momente.</div>
+  <div class="alert alert-info">
+    Scanarea este în curs sau a eșuat: <em>{{ scan.status }}</em>.<br>
+    Reîncarcă pagina în câteva momente.
+  </div>
 {% else %}
   {% include "scanner/partials/_result_cards.html" %}
+
+  {% if scan.subdomains %}
+  <div class="card mt-3">
+    <div class="card-body">
+      <h6>Subdomenii găsite</h6>
+      <ul>
+        {% for sub in scan.subdomains %}
+          <li>{{ sub }}</li>
+        {% empty %}
+          <li>Niciun subdomeniu găsit</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if scan.subdomain_scans %}
+  <div class="card mt-3">
+    <div class="card-body">
+      <h6>Rezultate pentru subdomenii</h6>
+      <ul>
+        {% for sub in scan.subdomain_scans %}
+          <li>
+            <strong>{{ sub.target }}</strong> –
+            <span class="badge bg-{% if sub.severity == 'green' %}success{% elif sub.severity == 'yellow' %}warning text-dark{% else %}danger{% endif %}">
+              {{ sub.score }}%
+            </span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
   <div class="card mt-3">
     <div class="card-body">
       <h6>Disclaimer</h6>
-      <p>Acest raport are scop informativ și educativ. Nu înlocuiește un audit extern autorizat conform HG nr. 49/2025. Pentru conformitate deplină, este necesar un audit realizat de specialiști acreditați.</p>
+      <p>
+        Acest raport are scop informativ și educativ. Nu înlocuiește un audit extern autorizat conform HG nr. 49/2025.
+        Pentru conformitate deplină, este necesar un audit realizat de specialiști acreditați.
+      </p>
     </div>
   </div>
 {% endif %}
