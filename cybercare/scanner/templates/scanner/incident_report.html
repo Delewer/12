@@ -1,0 +1,66 @@
+{% extends "scanner/base.html" %}
+{% block content %}
+<div class="container">
+  <h3 class="mb-4"><i class="bi bi-exclamation-octagon"></i> Raportare incidente (Art. 12 – Legea 142/2023)</h3>
+
+  <form id="incident-form" class="card p-4 shadow-sm">
+    <div class="mb-3">
+      <label class="form-label fw-bold">Etapa raportării</label>
+      <select name="etapa" class="form-select">
+        <option value="Initial">Inițială</option>
+        <option value="Actualizare">Actualizare</option>
+        <option value="Final">Final</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Tip incident</label>
+      <input type="text" name="tip" class="form-control" placeholder="ex: phishing, malware, acces neautorizat">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Impact estimat</label>
+      <select name="impact" class="form-select">
+        <option value="Minor">Minor</option>
+        <option value="Semnificativ">Semnificativ</option>
+        <option value="Critic">Critic</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Incident recurent (≥2 în 6 luni)</label>
+      <select name="recurent" class="form-select">
+        <option value="Nu">Nu</option>
+        <option value="Da">Da</option>
+      </select>
+    </div>
+
+    <div class="text-center">
+      <button type="button" id="export-json" class="btn btn-secondary me-2">
+        ⬇️ Export JSON
+      </button>
+      <button type="button" id="export-pdf" class="btn btn-danger">
+        ⬇️ Export PDF
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  function buildQuery() {
+    const form = document.getElementById("incident-form");
+    const params = new URLSearchParams(new FormData(form)).toString();
+    return params;
+  }
+
+  document.getElementById("export-json").addEventListener("click", function() {
+    window.location.href = "{% url 'export_incident_json' %}?" + buildQuery();
+  });
+
+  document.getElementById("export-pdf").addEventListener("click", function() {
+    window.location.href = "{% url 'export_incident_pdf' %}?" + buildQuery();
+  });
+});
+</script>
+{% endblock %}

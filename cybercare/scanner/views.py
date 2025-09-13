@@ -193,3 +193,46 @@ def export_pdf(request, scan_id):
 
     doc.build(content)
     return response
+
+from .utils.compliance import QUESTIONS
+
+def compliance_list(request):
+    return render(request, "scanner/compliance_list.html", {"questions": QUESTIONS})
+
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
+import json
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from io import BytesIO
+
+def incident_report(request):
+    return render(request, "scanner/incident_report.html")
+
+# Export JSON
+def export_incident_json(request):
+    data = {
+        "etapa": request.GET.get("etapa"),
+        "tip": request.GET.get("tip"),
+        "impact": request.GET.get("impact"),
+        "recurent": request.GET.get("recurent"),
+    }
+    return JsonResponse(data)
+
+# Export PDF
+def export_incident_pdf(request):
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=A4)
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(100, 800, "Raport incident – CyberCare")
+    p.setFont("Helvetica", 12)
+
+    y = 760
+    for k, v in request.GET.items():
+        p.drawString(80, y, f"{k.capitalize()}: {v}")
+        y -= 20
+
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    return HttpResponse(buffer, content_type="application/pdf")

@@ -65,10 +65,14 @@
             <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Documentație</a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'compliance_list' %}active{% endif %}" href="{% url 'compliance_list' %}">
+              Lista de Conformitate
+            </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
+            <a class="nav-link {% if request.resolver_match.url_name == 'incident_report' %}active{% endif %}" href="{% url 'incident_report' %}">
+              Raportare incidente
+            </a>
           </li>
         </ul>
       </div>

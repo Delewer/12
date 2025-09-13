@@ -1,0 +1,101 @@
+{% extends "scanner/base.html" %}
+{% block content %}
+<div class="container">
+  <h3 class="mb-4"><i class="bi bi-list-check"></i> Lista de Conformitate (Art. 11)</h3>
+
+  <!-- punem data-total aici -->
+  <form id="compliance-form" data-total="{{ questions|length }}" class="list-group">
+    {% for q in questions %}
+    <div class="list-group-item mb-3 shadow-sm rounded p-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h6 class="mb-0"><i class="bi bi-shield-lock"></i> {{ q.text }}</h6>
+        {% if q.mandatory %}
+          <span class="badge bg-danger">Obligatoriu – {{ q.article_ref }}</span>
+        {% else %}
+          <span class="badge bg-secondary">Recomandat</span>
+        {% endif %}
+      </div>
+
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="q{{ forloop.counter }}" value="yes">
+        <label class="form-check-label">Da</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="q{{ forloop.counter }}" value="no">
+        <label class="form-check-label">Nu</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="q{{ forloop.counter }}" value="unknown">
+        <label class="form-check-label">Nu știu</label>
+      </div>
+
+      <p class="text-danger mt-2 d-none rec">
+        <i class="bi bi-exclamation-triangle"></i> Recomandare: implementează această măsură cât mai curând.
+      </p>
+    </div>
+    {% endfor %}
+
+    <div class="text-center mt-4">
+      <button type="button" id="generate-report" class="btn btn-primary btn-lg">
+        <i class="bi bi-clipboard-check"></i> Generează raport
+      </button>
+    </div>
+  </form>
+
+  <div id="report-result" class="mt-5 d-none">
+    <div class="alert alert-info">
+      <h5><i class="bi bi-flag"></i> Rezultat conformitate</h5>
+      <p id="score"></p>
+      <ul id="recommendations"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const form = document.getElementById("compliance-form");
+  const total = parseInt(form.dataset.total);  // ✅ luăm numărul întrebărilor din atribut
+  const btn = document.getElementById("generate-report");
+  const resultBox = document.getElementById("report-result");
+  const scoreText = document.getElementById("score");
+  const recList = document.getElementById("recommendations");
+
+  // Afișează recomandarea imediat dacă utilizatorul bifează "Nu"
+  form.querySelectorAll("input[type=radio]").forEach(radio => {
+    radio.addEventListener("change", function() {
+      const rec = this.closest(".list-group-item").querySelector(".rec");
+      if (this.value === "no") {
+        rec.classList.remove("d-none");
+      } else {
+        rec.classList.add("d-none");
+      }
+    });
+  });
+
+  // Calculează scorul și recomandările
+  btn.addEventListener("click", function() {
+    const answers = form.querySelectorAll("input[type=radio]:checked");
+    let yes = 0;
+    let recommendations = [];
+
+    answers.forEach(a => {
+      if (a.value === "yes") yes++;
+      if (a.value === "no") {
+        const qText = a.closest(".list-group-item").querySelector("h6").innerText;
+        recommendations.push("⚠️ " + qText);
+      }
+    });
+
+    let score = Math.round((yes / total) * 100);
+
+    scoreText.innerText = "Scor de conformitate: " + score + "%";
+    recList.innerHTML = recommendations.length > 0
+      ? recommendations.map(r => "<li>" + r + "</li>").join("")
+      : "<li>✅ Toate cerințele sunt îndeplinite!</li>";
+
+    resultBox.classList.remove("d-none");
+    resultBox.scrollIntoView({ behavior: "smooth" });
+  });
+});
+</script>
+{% endblock %}
